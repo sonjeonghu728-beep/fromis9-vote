@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>프로미스 나인 인기투표</title>
+  <link rel="icon" href="data:," /> <!-- favicon 없는 경고 제거 -->
+
+  <!-- TailwindCSS CDN (개발용, 배포용은 별도 설치 필요) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+
+    // 🔹 Firebase 설정
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3Cg4kCsVXcbZrRetIx-NsiQJAu47qxoA",
+      authDomain: "fromis9-e2aeb.firebaseapp.com",
+      projectId: "fromis9-e2aeb",
+      storageBucket: "fromis9-e2aeb.appspot.com",
+      messagingSenderId: "45408653741",
+      appId: "1:45408653741:web:16534371a33a8d70241124"
+    };
+
+    // Firebase 초기화
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 🔹 멤버 + 이미지 URL (https 링크)
+    const members = [
+      { id: "ina", name: "이나경", img: "https://firebasestorage.googleapis.com/v0/b/fromis9-e2aeb.firebasestorage.app/o/%EC%9D%B4%EB%82%98%EA%B2%BD.png.jpg?alt=media&token=1ac591e9-76a6-4c47-9d70-595a13ab4118" },
+      { id: "baek", name: "백지헌", img: "https://firebasestorage.googleapis.com/v0/b/fromis9-e2aeb.firebasestorage.app/o/%EB%B0%B1%EC%A7%80%ED%97%8C.png.jpg?alt=media&token=5678e2d1-dd20-4370-8cbd-d2d6572e7397" },
+      { id: "chae", name: "이채영", img: "https://firebasestorage.googleapis.com/v0/b/fromis9-e2aeb.firebasestorage.app/o/%EC%9D%B4%EC%B1%84%EC%98%81.png.jpg?alt=media&token=7f3f685a-2fcc-46b2-be8d-655157894db6" },
+      { id: "park", name: "박지원", img: "https://firebasestorage.googleapis.com/v0/b/fromis9-e2aeb.firebasestorage.app/o/%EB%B0%95%EC%A7%80%EC%9B%90.png.jpg?alt=media&token=e8574ba8-7dbb-409a-9ff8-0864d20a7fd6" },
+      { id: "song", name: "송하영", img: "https://firebasestorage.googleapis.com/v0/b/fromis9-e2aeb.firebasestorage.app/o/%EC%86%A1%ED%95%98%EC%98%81.png.jpg?alt=media&token=fb3c48f2-79c6-440b-9485-b92b4ebf3e14" }
+    ];
+    window.addEventListener('DOMContentLoaded', async () => {
+      const grid = document.getElementById('memberGrid');
+
+      for (const member of members) {
+        const docRef = doc(db, "votes", member.id);
+        const docSnap = await getDoc(docRef);
+
+        let likes = 0;
+        if (docSnap.exists()) {
+          likes = docSnap.data().likes;
+        } else {
+          await setDoc(docRef, { likes: 0 });
+        }
+
+        // 카드 생성
+        const div = document.createElement('div');
+        div.classList.add('flex','flex-col','items-center','bg-gray-100','p-4','rounded-lg');
+
+        const img = document.createElement('img');
+        img.src = member.img;
+        img.alt = member.name;
+        img.classList.add('rounded-lg','w-40','h-40','object-cover');
+
+        const name = document.createElement('p');
+        name.textContent = member.name;
+        name.classList.add('mt-2','font-semibold');
+
+        const btn = document.createElement('button');
+        btn.classList.add('mt-3','px-4','py-2','bg-blue-400','hover:bg-blue-500','text-white','rounded-full','w-full');
+        btn.textContent = `좋아요 ${likes}`;
+        btn.addEventListener('click', async () => {
+          await updateDoc(docRef, { likes: increment(1) });
+          const updatedSnap = await getDoc(docRef);
+          btn.textContent = `좋아요 ${updatedSnap.data().likes}`;
+        });
+
+        div.appendChild(img);
+        div.appendChild(name);
+        div.appendChild(btn);
+        grid.appendChild(div);
+      }
+    });
+  </script>
+</head>
+<body class="bg-white font-sans">
+  <div class="max-w-6xl mx-auto px-4 py-10">
+    <h1 class="text-3xl font-bold text-center mb-10">프로미스 나인 인기투표!</h1>
+    <div id="memberGrid" class="grid grid-cols-1 sm:grid-cols-5 gap-6 justify-items-center"></div>
+  </div>
+</body>
+</html>
