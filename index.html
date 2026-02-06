@@ -1,101 +1,148 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4088294207752316"
-     crossorigin="anonymous"></script>
-
 <meta charset="UTF-8">
 <title>프로미스 나인 인기투표</title>
 <link rel="icon" href="data:," />
-
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4088294207752316"
+     crossorigin="anonymous"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
 const firebaseConfig = {
-apiKey: "AIzaSyD3Cg4kCsVXcbZrRetIx-NsiQJAu47qxoA",
-authDomain: "fromis9-e2aeb.firebaseapp.com",
-projectId: "fromis9-e2aeb",
-storageBucket: "fromis9-e2aeb.appspot.com",
-messagingSenderId: "45408653741",
-appId: "1:45408653741:web:16534371a33a8d70241124"
+  apiKey: "AIzaSyD3Cg4kCsVXcbZrRetIx-NsiQJAu47qxoA",
+  authDomain: "fromis9-e2aeb.firebaseapp.com",
+  projectId: "fromis9-e2aeb",
+  storageBucket: "fromis9-e2aeb.appspot.com",
+  messagingSenderId: "45408653741",
+  appId: "1:45408653741:web:16534371a33a8d70241124"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const ADMIN_PASSWORD = "20001000";
 
 const members = [
-{ id: "ina", name: "이나경", img: "https://firebasestorage.googleapis.com/v0/b/fromis9-e2aeb.firebasestorage.app/o/%EC%9D%B4%EB%82%98%EA%B2%BD.png.jpg?alt=media&token=1ac591e9-76a6-4c47-9d70-595a13ab4118" },
-{ id: "baek", name: "백지헌", img: "https://firebasestorage.googleapis.com/v0/b/fromis9-e2aeb.firebasestorage.app/o/%EB%B0%B1%EC%A7%80%ED%97%8C.png.jpg?alt=media&token=5678e2d1-dd20-4370-8cbd-d2d6572e7397" },
-{ id: "chae", name: "이채영", img: "https://firebasestorage.googleapis.com/v0/b/fromis9-e2aeb.firebasestorage.app/o/%EC%9D%B4%EC%B1%84%EC%98%81.png.jpg?alt=media&token=7f3f685a-2fcc-46b2-be8d-655157894db6" },
-{ id: "park", name: "박지원", img: "https://firebasestorage.googleapis.com/v0/b/fromis9-e2aeb.firebasestorage.app/o/%EB%B0%95%EC%A7%80%EC%9B%90.png.jpg?alt=media&token=e8574ba8-7dbb-409a-9ff8-0864d20a7fd6" },
-{ id: "song", name: "송하영", img: "https://firebasestorage.googleapis.com/v0/b/fromis9-e2aeb.firebasestorage.app/o/%EC%86%A1%ED%95%98%EC%98%81.png.jpg?alt=media&token=fb3c48f2-79c6-440b-9485-b92b4ebf3e14" }
+  { id: "ina", name: "이나경", img: "https://firebasestorage.googleapis.com/v0/b/fromis9-e2aeb.firebasestorage.app/o/%EC%9D%B4%EB%82%98%EA%B2%BD.png.jpg?alt=media&token=1ac591e9-76a6-4c47-9d70-595a13ab4118",
+    profile: "이나경은 1997년 7월 1일 출생, 프로미스나인 리드보컬 & 댄서, 상징색은 핑크, MBTI ENFP, 좌우명: 즐겁게 도전하자" },
+  { id: "baek", name: "백지헌", img: "https://firebasestorage.googleapis.com/v0/b/fromis9-e2aeb.firebasestorage.app/o/%EB%B0%B1%EC%A7%80%ED%97%8C.png.jpg?alt=media&token=5678e2d1-dd20-4370-8cbd-d2d6572e7397",
+    profile: "백지헌은 1999년 6월 12일 출생, 프로미스나인 서브보컬, 상징색은 그린, MBTI ISFJ, 좌우명: 꾸준히 성장하자" },
+  { id: "chae", name: "이채영", img: "https://firebasestorage.googleapis.com/v0/b/fromis9-e2aeb.firebasestorage.app/o/%EC%9D%B4%EC%B1%84%EC%98%81.png.jpg?alt=media&token=7f3f685a-2fcc-46b2-be8d-655157894db6",
+    profile: "이채영은 2000년 1월 5일 출생, 프로미스나인 리드댄서, 상징색은 퍼플, MBTI INFJ, 좌우명: 끊임없이 도전하자" },
+  { id: "park", name: "박지원", img: decodeURIComponent("https://firebasestorage.googleapis.com/v0/b/fromis9-e2aeb.firebasestorage.app/o/%EB%B0%95%EC%A7%80%EC%9B%90.png.jpg?alt=media&token=e8574ba8-7dbb-409a-9ff8-0864d20a7fd6"),
+    profile: "박지원은 1998년 3월 5일 출생, 프로미스나인 서브보컬 & 댄서, 상징색은 블루, MBTI ENFP, 좌우명: 함께 성장하자" },
+  { id: "song", name: "송하영", img: "https://firebasestorage.googleapis.com/v0/b/fromis9-e2aeb.firebasestorage.app/o/%EC%86%A1%ED%95%98%EC%98%81.png.jpg?alt=media&token=fb3c48f2-79c6-4409-9485-b92b4ebf3e14",
+    profile: "송하영은 1997년 9월 29일 출생, 프로미스나인 메인보컬 & 메인댄서, 상징색은 옐로우, MBTI INFP, 좌우명: 도전을 두려워하지 말자, 많이 배우자" }
 ];
 
 window.addEventListener('DOMContentLoaded', async () => {
-const grid = document.getElementById('memberGrid');
+  const grid = document.getElementById('memberGrid');
 
-for (const member of members) {
-const docRef = doc(db, "votes", member.id);
-const docSnap = await getDoc(docRef);
+  for (const member of members) {
+    const docRef = doc(db, "votes", member.id);
 
-let likes = 0;
-if (docSnap.exists()) {
-likes = docSnap.data().likes;
-} else {
-await setDoc(docRef, { likes: 0 });
-}
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) await setDoc(docRef, { likes: 0, profile: member.profile });
 
-const div = document.createElement('div');
-div.classList.add('flex','flex-col','items-center','bg-white','p-4','rounded-2xl','shadow-md','hover:shadow-xl','transition','w-full');
+    const div = document.createElement('div');
+    div.classList.add(
+      'flex','flex-col','justify-between','items-center',
+      'bg-white','p-4','rounded-2xl','shadow-md','hover:shadow-xl','transition',
+      'w-full','h-full','max-h-[500px]'
+    );
 
-const img = document.createElement('img');
-img.src = member.img;
-img.alt = member.name;
-img.classList.add('rounded-xl','w-40','h-40','object-cover');
+    const img = document.createElement('img');
+    img.src = member.img;
+    img.alt = member.name;
+    img.classList.add('rounded-xl','w-40','h-40','object-cover');
 
-const name = document.createElement('p');
-name.textContent = member.name;
-name.classList.add('mt-3','font-bold','text-lg');
+    const name = document.createElement('p');
+    name.textContent = member.name;
+    name.classList.add('mt-3','font-bold','text-lg');
 
-const btn = document.createElement('button');
-btn.classList.add('mt-3','px-4','py-2','bg-pink-400','hover:bg-pink-500','text-white','rounded-full','w-full','font-semibold');
-btn.textContent = `좋아요 ${likes}`;
-btn.addEventListener('click', async () => {
-await updateDoc(docRef, { likes: increment(1) });
-const updatedSnap = await getDoc(docRef);
-btn.textContent = `좋아요 ${updatedSnap.data().likes}`;
-});
+    const profileText = document.createElement('p');
+    profileText.classList.add(
+      'mt-2','text-gray-500','text-sm','text-center','break-words','whitespace-pre-wrap',
+      'overflow-auto','flex-1','w-full'
+    );
 
-div.appendChild(img);
-div.appendChild(name);
-div.appendChild(btn);
-grid.appendChild(div);
-}
+    const buttonContainer = document.createElement('div');
+    buttonContainer.classList.add('mt-3','flex','gap-2','w-full');
+
+    const likeBtn = document.createElement('button');
+    likeBtn.classList.add('flex-1','px-4','py-2','bg-pink-400','hover:bg-pink-500','text-white','rounded-full','font-semibold');
+
+    const editBtn = document.createElement('button');
+    editBtn.classList.add('flex-1','px-4','py-2','bg-blue-400','hover:bg-blue-500','text-white','rounded-full','font-semibold','text-sm');
+    editBtn.textContent = "프로필 수정";
+
+    onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        likeBtn.textContent = `좋아요 ${data.likes}`;
+        profileText.textContent = data.profile || member.profile;
+      }
+    });
+
+    likeBtn.addEventListener('click', async () => await updateDoc(docRef, { likes: increment(1) }));
+
+    editBtn.addEventListener('click', async () => {
+      const pw = prompt("운영자 비밀번호를 입력하세요:");
+      if (pw !== ADMIN_PASSWORD) { alert("비밀번호가 틀렸습니다!"); return; }
+      const newProfile = prompt("새 프로필 내용을 입력하세요:", profileText.textContent);
+      if (newProfile !== null && newProfile.trim() !== "") await updateDoc(docRef, { profile: newProfile });
+    });
+
+    buttonContainer.appendChild(likeBtn);
+    buttonContainer.appendChild(editBtn);
+
+    div.appendChild(img);
+    div.appendChild(name);
+    div.appendChild(profileText);
+    div.appendChild(buttonContainer);
+
+    grid.appendChild(div);
+  }
 });
 </script>
 </head>
 
 <body class="bg-gradient-to-b from-pink-50 to-white font-sans">
+<div class="max-w-7xl mx-auto px-4 py-12">
 
-<div class="max-w-6xl mx-auto px-4 py-12">
+  <!-- 로고 -->
+  <div class="text-center mb-6">
+    <img src="https://firebasestorage.googleapis.com/v0/b/fromis9-e2aeb.firebasestorage.app/o/LOGO.jpg?alt=media&token=4cd30e3d-4140-4409-a0c7-a6833dbdaa2c" alt="프로미스나인 로고" class="mx-auto w-48 h-auto">
+  </div>
 
-<div class="text-center mb-12">
-<h1 class="text-4xl font-extrabold mb-4">프로미스 나인 인기투표 💗</h1>
-<p class="text-gray-600 text-lg mb-2">
-좋아하는 멤버에게 아낌없이 투표해주세요~~!!
-</p>
-<p class="text-gray-500">
-팬들이 직접 참여하는 인기 투표 사이트입니다. 응원하는 멤버에게 좋아요를 눌러 응원해보세요!
-</p>
+  <!-- 안내문 -->
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-extrabold mb-2">프로미스 나인 인기투표 💗</h1>
+    <p class="text-gray-700 text-lg mb-1">좋아하는 멤버에게 아낌없이 투표해주세요!</p>
+    <p class="text-gray-500 text-sm">팬들이 직접 참여하는 인기 투표 사이트입니다. 응원하는 멤버에게 좋아요를 눌러 응원해보세요!</p>
+  </div>
+
+  <!-- 멤버 카드 그리드 -->
+  <div id="memberGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 justify-items-center"></div>
+
+  <!-- 광고 -->
+  <div class="w-full text-center mt-6">
+    <ins class="adsbygoogle"
+      style="display:block"
+      data-ad-client="ca-pub-4088294207752316"
+      data-ad-slot="YOUR_AD_SLOT_HERE"
+      data-ad-format="auto"
+      data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
 </div>
-
-<div id="memberGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 justify-items-center"></div>
-
-</div>
-
 </body>
 </html>
+
+
+
+
