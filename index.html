@@ -43,7 +43,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   for (const member of members) {
     const docRef = doc(db, "votes", member.id);
-
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) await setDoc(docRef, { likes: 0, profile: member.profile });
 
@@ -88,7 +87,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
 
     likeBtn.addEventListener('click', async () => await updateDoc(docRef, { likes: increment(1) }));
-
     editBtn.addEventListener('click', async () => {
       const pw = prompt("운영자 비밀번호를 입력하세요:");
       if (pw !== ADMIN_PASSWORD) { alert("비밀번호가 틀렸습니다!"); return; }
@@ -106,6 +104,18 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     grid.appendChild(div);
   }
+
+  // 카드 사이 광고 추가 (승인 가능성 높임)
+  const adDiv = document.createElement('div');
+  adDiv.classList.add('w-full','text-center','mt-6');
+  adDiv.innerHTML = `<ins class="adsbygoogle"
+    style="display:block"
+    data-ad-client="ca-pub-4088294207752316"
+    data-ad-slot="YOUR_AD_SLOT_HERE"
+    data-ad-format="auto"
+    data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script>`;
+  document.body.appendChild(adDiv);
 });
 </script>
 </head>
@@ -128,20 +138,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   <!-- 멤버 카드 그리드 -->
   <div id="memberGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 justify-items-center"></div>
 
-  <!-- 광고 -->
-  <div class="w-full text-center mt-6">
-    <ins class="adsbygoogle"
-      style="display:block"
-      data-ad-client="ca-pub-4088294207752316"
-      data-ad-slot="YOUR_AD_SLOT_HERE"
-      data-ad-format="auto"
-      data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-  </div>
-
 </div>
 </body>
 </html>
+
 
 
 
